@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "django-sql-tagger"
+version = "0.1.0"
+description = "Adds a comment to SQL queries pointing to their place of origin"
+authors = ["Filip Sedlák <filip@sedlakovi.org>"]
+license = "GPL3"
+readme = "README.md"
+packages = [{include = "django_sql_tagger"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<4"
+django = "^5.0.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.22.0"
+pytest = "^8.0.1"
+pytest-django = "^4.8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
