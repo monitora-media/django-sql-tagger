@@ -71,16 +71,15 @@ LOGGING = {
         }
     },
     'loggers': {
-        # Log SQL at DEBUG
-        # 'django.db.backends': {
-        #     # 'level': 'INFO',
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        # },
-        # 'django_sql_tagger': {
-        #     'level': 'DEBUG',
-        #     'handlers': ['console'],
-        # },
+        'django.db.backends': {
+            # 'level': 'INFO',
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
+        'django_sql_tagger': {
+            'level': 'DEBUG',
+            'handlers': ['console'],
+        },
     }
 }
 
