@@ -44,9 +44,8 @@ See the `testsite/` directory for an example project using this package.
 
 ```python
 from django.core.management import BaseCommand
-from django.db import connection
+from django.db import connection, transaction
 
-from django_sql_tagger import transaction
 from testapp.models import Website
 
 
