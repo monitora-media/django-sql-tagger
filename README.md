@@ -91,6 +91,10 @@ GPLv3 (see `LICENSE` file)
 
 ## Changelog
 
+### 0.2.1
+
+- Fix AttributeError: type object 'Command' has no attribute '__code__'
+
 ### 0.2.0
 
 - Monkey-patch `transaction.atomic` so all transactions are tagged by default

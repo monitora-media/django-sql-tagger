@@ -48,7 +48,7 @@ class TaggingAtomic(Atomic):
         if not is_code_ours(code):
             func = calling_frame.f_locals.get('func')  # assuming we might be in contextlib.ContextDecorator.__call__
 
-            if func and is_code_ours(func.__code__):
+            if func and hasattr(func, '__code__') and is_code_ours(func.__code__):
                 code = func.__code__
                 lineno = code.co_firstlineno
             else:
