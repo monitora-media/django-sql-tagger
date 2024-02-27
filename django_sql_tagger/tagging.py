@@ -12,6 +12,7 @@ from django.db.models import QuerySet, Model, Manager
 transaction_tag = threading.local()
 logger = logging.getLogger(__name__)
 code_root = str(settings.SQL_TAGGER_CODE_ROOT)
+framework_classes = (QuerySet, Model, Manager)
 
 
 def is_code_ours(f_code: CodeType) -> bool:
@@ -72,8 +73,8 @@ def sql_query_tagger(execute, sql, params, many, context):
             _cls = calling_frame.f_locals.get('cls')
             if (
                 (not is_code_ours(calling_frame.f_code))
-                or (isinstance(calling_frame.f_locals.get('self'), (QuerySet, Model, Manager)))
-                or (_cls and inspect.isclass(_cls) and issubclass(_cls, (QuerySet, Model, Manager)))
+                or (isinstance(calling_frame.f_locals.get('self'), framework_classes))
+                or (_cls and inspect.isclass(_cls) and issubclass(_cls, framework_classes))
             ):
                 calling_frame = calling_frame.f_back
             else:
