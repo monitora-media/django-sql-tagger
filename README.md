@@ -32,6 +32,16 @@ SQL_TAGGER_PATH_REPLACEMENTS = [
                                 `/myapp/views.py` and you want to replace `/myapp/` with `a/`, you would add
                                 `(r'^myapp/', 'a/')` to the list.
 
+### Tagging precision
+
+The tagger automatically adds comments to SQL queries, pointing to the place in the code where the query was executed.
+It tries to be clever in finding the right stack frame. Therefore it ignores all stack frames that don't belong
+to `SQL_TAGGER_CODE_ROOT` and anything that subclasses `Model` or `QuerySet`.
+
+If you have a utility method that you call from multiple places, you may want to ignore it by adding
+`@django_sql_tagger.ignore_below` to the method. This annotation makes django-sql-tagger look only at the stack frames
+that were created before the annotated method was called.
+
 ### Tagging transactions
 
 This app monkey-patches `transaction.atomic`, so no changes to your code are necessary. `transaction.atomic`

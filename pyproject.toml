@@ -1,6 +1,6 @@
 [project]
 name = "django-sql-tagger"
-version = "0.2.1"
+version = "0.3.0"
 description = "Adds a comment to SQL queries pointing to their place of origin"
 authors = [{name= "Filip Sedlák", email = "filip@sedlakovi.org"}]
 readme = "README.md"
