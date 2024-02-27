@@ -5,7 +5,7 @@ from io import StringIO
 from django.db import DEFAULT_DB_ALIAS
 from django.db.transaction import Atomic
 
-from django_sql_tagger.tagging import is_frame_in_our_code, transaction_tag, filepath
+from django_sql_tagger.tagging import is_code_ours, transaction_tag, filepath
 
 
 @dataclasses.dataclass(frozen=True)
@@ -36,19 +36,34 @@ class TransactionStack:
 class TaggingAtomic(Atomic):
     def __init__(self, *args, tag=None, **kwargs):
         self.tag = tag
+        self.capturing = True
         super().__init__(*args, **kwargs)
 
     def __enter__(self):
         calling_frame = inspect.currentframe().f_back
-        assert is_frame_in_our_code(calling_frame)
+
+        code = calling_frame.f_code
+        lineno = calling_frame.f_lineno
+
+        if not is_code_ours(code):
+            func = calling_frame.f_locals.get('func')  # assuming we might be in contextlib.ContextDecorator.__call__
+
+            if func and is_code_ours(func.__code__):
+                code = func.__code__
+                lineno = code.co_firstlineno
+            else:
+                self.capturing = False
+                return super().__enter__()
+
         if not hasattr(transaction_tag, 'stack'):
             transaction_tag.stack = TransactionStack()
 
-        transaction_tag.stack.enter(TransactionInfo(filepath(calling_frame), calling_frame.f_lineno, self.tag))
+        transaction_tag.stack.enter(TransactionInfo(filepath(code), lineno, self.tag))
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback):
-        transaction_tag.stack.exit()
+        if self.capturing:
+            transaction_tag.stack.exit()
         return super().__exit__(exc_type, exc_value, traceback)
 
 

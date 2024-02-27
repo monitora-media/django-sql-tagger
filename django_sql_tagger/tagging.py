@@ -3,7 +3,7 @@ import io
 import logging
 import re
 import threading
-from types import FrameType
+from types import FrameType, CodeType
 
 from django.conf import settings
 from django.db.models import QuerySet
@@ -13,12 +13,12 @@ transaction_tag = threading.local()
 logger = logging.getLogger(__name__)
 
 
-def is_frame_in_our_code(frame: FrameType) -> bool:
-    return frame.f_code.co_filename.startswith(str(settings.SQL_TAGGER_CODE_ROOT))
+def is_code_ours(f_code: CodeType) -> bool:
+    return f_code.co_filename.startswith(str(settings.SQL_TAGGER_CODE_ROOT))
 
 
-def filepath(frame: FrameType) -> str:
-    path = frame.f_code.co_filename[len(str(settings.SQL_TAGGER_CODE_ROOT)) + 1:]
+def filepath(f_code: CodeType) -> str:
+    path = f_code.co_filename[len(str(settings.SQL_TAGGER_CODE_ROOT)) + 1:]
     for regex, replacement in settings.SQL_TAGGER_PATH_REPLACEMENTS:
         path = re.sub(regex, replacement, path)
 
@@ -40,11 +40,11 @@ def sql_query_tagger(execute, sql, params, many, context):
 
         calling_frame = inspect.currentframe().f_back
         while calling_frame.f_back and (
-                not is_frame_in_our_code(calling_frame)
+                not is_code_ours(calling_frame.f_code)
                 or isinstance(calling_frame.f_locals.get('self'), QuerySet)):
             calling_frame = calling_frame.f_back
 
-        comment.write(f'{filepath(calling_frame)}:{calling_frame.f_lineno}')
+        comment.write(f'{filepath(calling_frame.f_code)}:{calling_frame.f_lineno}')
 
         comment.write(' */')
         logger.debug(comment.getvalue())

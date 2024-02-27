@@ -32,6 +32,12 @@ SQL_TAGGER_PATH_REPLACEMENTS = [
                                 `/myapp/views.py` and you want to replace `/myapp/` with `a/`, you would add
                                 `(r'^myapp/', 'a/')` to the list.
 
+### Tagging transactions
+
+This app monkey-patches `transaction.atomic`, so no changes to your code are necessary. `transaction.atomic`
+now accepts a `tag` argument, which will be recorded in the comments of the SQL queries. Without a `tag`, only
+the filename and line number of the `transaction.atomic()` call will be recorded.
+
 ## Example
 
 See the `testsite/` directory for an example project using this package.
@@ -83,3 +89,35 @@ in the database log or a database monitoring tool.
 ## License
 
 GPLv3 (see `LICENSE` file)
+
+## Changelog
+
+### 0.2.0
+
+- Monkey-patch `transaction.atomic` so all transactions are tagged by default
+
+### 0.1.0
+
+Initial release
+
+
+## Development
+
+### Install dependencies
+
+```
+pip install -e '.[dev]'
+```
+
+### Run tests
+
+```
+cd testsite/
+pytest
+```
+
+### Release
+
+1. Update changelog in this file.
+2. Wait for tests to pass.
+3. Create a new release on GitHub. This will trigger a new job that will publish the package to PyPI.

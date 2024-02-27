@@ -4,7 +4,7 @@ import logging
 import pytest
 from django.test import TestCase
 
-from django_sql_tagger import transaction
+from django.db import transaction
 from django_sql_tagger.tagging import logger as tagging_logger
 from testapp.models import Website
 
@@ -67,3 +67,27 @@ def test_tag(tags):
     with transaction.atomic(tag='xxx'):
         Website.objects.first()
     assert [f'/* T=xxx ta/tests.py:{get_linenumber() - 2} |> ta/tests.py:{get_linenumber() - 1} */'] == tags
+
+
+@transaction.atomic
+def decorated_no_params():
+    Website.objects.first()
+
+
+@pytest.mark.django_db
+def test_atomic_decorator_no_params(tags):
+    assert tags == []
+    decorated_no_params()
+    assert [f'/* ta/tests.py:{get_linenumber() - 9} |> ta/tests.py:{get_linenumber() - 7} */'] == tags
+
+
+@transaction.atomic()
+def decorated_with_params():
+    Website.objects.first()
+
+
+@pytest.mark.django_db
+def test_atomic_decorator_with_params(tags):
+    assert tags == []
+    decorated_with_params()
+    assert [f'/* ta/tests.py:{get_linenumber() - 9} |> ta/tests.py:{get_linenumber() - 7} */'] == tags
