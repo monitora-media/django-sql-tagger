@@ -12,6 +12,10 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v4
+      - name: Set correct version in pyproject.toml
+        run: |
+          sed -i "s/version = .*/version = \"${GITHUB_REF#refs/tags/}\"/" pyproject.toml
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
