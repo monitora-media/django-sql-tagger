@@ -101,6 +101,17 @@ GPLv3 (see `LICENSE` file)
 
 ## Changelog
 
+### 0.3.1
+
+Include `Manager` in the list of framework classes
+
+### 0.3.0
+
+Better precision for tags
+
+- Ignore subclasses of Model and QuerySet
+- Add annotation so the user can ignore utility functions
+
 ### 0.2.1
 
 - Fix AttributeError: type object 'Command' has no attribute '__code__'
